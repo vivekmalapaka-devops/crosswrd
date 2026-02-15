@@ -12,6 +12,7 @@ interface CrosswordGridProps {
   solvedWords: Set<string>;
   onCellClick: (r: number, c: number) => void;
   onKeyDown: (e: React.KeyboardEvent | KeyboardEvent) => void;
+  onLetterInput: (letter: string) => void;
 }
 
 export function CrosswordGrid({
@@ -22,6 +23,7 @@ export function CrosswordGrid({
   solvedWords,
   onCellClick,
   onKeyDown,
+  onLetterInput,
 }: CrosswordGridProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { grid, placed, rows, cols } = data;
@@ -124,14 +126,26 @@ export function CrosswordGrid({
       </div>
       <input
         ref={inputRef}
-        className="fixed -top-24 opacity-0"
+        className="fixed -top-24 opacity-0 w-0 h-0 p-0 border-0"
         type="text"
         autoComplete="off"
+        autoCorrect="off"
         autoCapitalize="characters"
         inputMode="text"
+        spellCheck={false}
         onKeyDown={(e) => onKeyDown(e)}
-        onChange={() => {}}
-        value=""
+        onInput={(e) => {
+          // Fallback for Android keyboards that don't fire reliable keyDown events.
+          // On desktop, keyDown already calls preventDefault() for letters,
+          // so the character never enters the input and this handler won't fire.
+          const input = e.currentTarget;
+          const val = input.value;
+          if (val) {
+            const char = val.slice(-1);
+            onLetterInput(char);
+          }
+          input.value = "";
+        }}
       />
     </div>
   );

@@ -91,6 +91,7 @@ export function SolvePage({ puzzle }: SolvePageProps) {
           solvedWords={solver.solvedWords}
           onCellClick={solver.selectCell}
           onKeyDown={solver.handleKeyDown}
+          onLetterInput={solver.placeLetter}
         />
         <CluesPanel
           placed={data.placed}

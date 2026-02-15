@@ -121,6 +121,19 @@ export function useCrosswordSolver(data: CrosswordData) {
     [selectedCell, selectedDir, data]
   );
 
+  const placeLetter = useCallback(
+    (letter: string) => {
+      if (!selectedCell) return;
+      const { r, c } = selectedCell;
+      const upper = letter.toUpperCase();
+      if (/^[A-Z]$/.test(upper)) {
+        setUserLetters((prev) => ({ ...prev, [`${r}-${c}`]: upper }));
+        moveCursor(1);
+      }
+    },
+    [selectedCell, moveCursor]
+  );
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent | KeyboardEvent) => {
       if (!selectedCell) return;
@@ -184,12 +197,10 @@ export function useCrosswordSolver(data: CrosswordData) {
       const letter = e.key.toUpperCase();
       if (/^[A-Z]$/.test(letter)) {
         e.preventDefault();
-        setUserLetters((prev) => ({ ...prev, [`${r}-${c}`]: letter }));
-        // Move to next cell
-        moveCursor(1);
+        placeLetter(letter);
       }
     },
-    [selectedCell, selectedDir, data, moveCursor]
+    [selectedCell, selectedDir, data, moveCursor, placeLetter]
   );
 
   return {
@@ -202,6 +213,7 @@ export function useCrosswordSolver(data: CrosswordData) {
     selectCell,
     selectWord,
     handleKeyDown,
+    placeLetter,
     setSelectedDir,
   };
 }
