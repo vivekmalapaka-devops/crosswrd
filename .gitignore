@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -19,19 +17,53 @@
 
 # production
 /build
+/dist
 
-# misc
-.DS_Store
+# env files — NEVER commit these
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.staging
+!.env.example
+
+# secrets & keys
 *.pem
+*.key
+*.cert
+*.p12
+*.pfx
+*.jks
+*.keystore
 
-# debug
+# credentials
+credentials.json
+service-account*.json
+*-credentials.json
+*.secret
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+._*
+
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel
@@ -39,3 +71,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase local
+.supabase/
+
+# misc
+.claude/
+*.log
+
+# project instructions (contains infra details)
+CLAUDE.md
