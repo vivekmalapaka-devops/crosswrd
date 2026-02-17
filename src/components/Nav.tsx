@@ -14,7 +14,7 @@ export function Nav() {
         </a>
         <a
           href="/privacy"
-          className="hidden sm:block text-sm text-text-muted hover:text-text transition-colors"
+          className="text-sm text-text-muted hover:text-text transition-colors"
         >
           privacy
         </a>
