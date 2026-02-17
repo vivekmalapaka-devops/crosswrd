@@ -28,7 +28,7 @@ export default function Home() {
       </main>
 
       {/* How it works */}
-      <section className="max-w-[860px] mx-auto px-6 py-20 sm:py-28">
+      <section id="how-it-works" className="max-w-[860px] mx-auto px-6 py-20 sm:py-28 scroll-mt-20">
         <h2 className="text-center text-xs font-medium uppercase tracking-widest text-text-muted mb-14">
           How it works
         </h2>
