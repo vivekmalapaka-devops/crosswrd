@@ -16,6 +16,21 @@
   --radius: 12px;
 }
 
+html.dark {
+  --bg: #1a1a1e;
+  --surface: #222226;
+  --surface-2: #2a2a2f;
+  --border: #36363c;
+  --border-dark: #4a4a52;
+  --text: #e4e4e8;
+  --text-muted: #8a8a94;
+  --accent: #e4e4e8;
+  --accent-soft: rgba(228, 228, 232, 0.06);
+  --accent-mid: rgba(228, 228, 232, 0.12);
+  --correct: #5ce892;
+  --correct-soft: rgba(92, 232, 146, 0.1);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
