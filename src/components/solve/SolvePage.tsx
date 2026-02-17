@@ -43,7 +43,7 @@ export function SolvePage({ puzzle }: SolvePageProps) {
           setDecrypted(payload);
         } catch {
           setDecryptError(
-            "Invalid link — the decryption key may be incorrect or the data is corrupted."
+            "Invalid link — the decryption key may be incorrect."
           );
         }
       } else {

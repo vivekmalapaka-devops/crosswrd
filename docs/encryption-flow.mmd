@@ -1,0 +1,65 @@
+---
+title: How Your Puzzle Stays Private
+---
+
+flowchart TD
+    subgraph creator["CREATOR'S DEVICE"]
+        A["Write your puzzle<br/>name, clues, personal message"]
+        B["Browser generates<br/>a random secret key"]
+        C["Browser encrypts everything<br/>into unreadable scrambled text"]
+        D["Encrypted data"]
+        E["Secret key"]
+
+        A --> C
+        B --> C
+        C --> D
+        B --> E
+    end
+
+    subgraph server["OUR SERVER"]
+        F[("Database<br/><br/>Stores only scrambled text<br/>Name: blank<br/>Message: blank<br/>Clues: encrypted<br/><br/>We cannot read any of it")]
+    end
+
+    subgraph link["THE LINK YOU SHARE"]
+        G["yoursite.com/p/abc123"]
+        H["#k=secret-key-here"]
+        G ~~~ H
+    end
+
+    subgraph solver["SOLVER'S DEVICE"]
+        I["Browser fetches<br/>encrypted data from server"]
+        J["Browser reads secret key<br/>from the link"]
+        K["Browser decrypts<br/>everything locally"]
+        L["Original puzzle restored"]
+        M["Crossword is playable"]
+
+        I --> K
+        J --> K
+        K --> L
+        L --> M
+    end
+
+    D -- "Sent to server<br/>encrypted, unreadable" --> F
+    E -- "Placed in the link<br/>after the # symbol" --> H
+    G -- "This part is sent<br/>to the server" --> I
+    H -. "This part NEVER<br/>leaves the browser" .-> J
+    F -- "Server returns<br/>encrypted data" --> I
+
+    style creator fill:#1a1a2e,stroke:#5eead4,stroke-width:2px,color:#e0e0e0
+    style server fill:#1a1a2e,stroke:#f87171,stroke-width:2px,color:#e0e0e0
+    style link fill:#1a1a2e,stroke:#fbbf24,stroke-width:2px,color:#e0e0e0
+    style solver fill:#1a1a2e,stroke:#5eead4,stroke-width:2px,color:#e0e0e0
+
+    style A fill:#2a2a3e,stroke:#5eead4,color:#e0e0e0
+    style B fill:#2a2a3e,stroke:#5eead4,color:#e0e0e0
+    style C fill:#2a2a3e,stroke:#5eead4,color:#e0e0e0
+    style D fill:#164e63,stroke:#5eead4,color:#e0e0e0
+    style E fill:#713f12,stroke:#fbbf24,color:#e0e0e0
+    style F fill:#3b1a1a,stroke:#f87171,color:#e0e0e0
+    style G fill:#2a2a3e,stroke:#fbbf24,color:#e0e0e0
+    style H fill:#713f12,stroke:#fbbf24,color:#e0e0e0
+    style I fill:#2a2a3e,stroke:#5eead4,color:#e0e0e0
+    style J fill:#2a2a3e,stroke:#fbbf24,color:#e0e0e0
+    style K fill:#2a2a3e,stroke:#5eead4,color:#e0e0e0
+    style L fill:#164e63,stroke:#5eead4,color:#e0e0e0
+    style M fill:#1a3a2a,stroke:#4ade80,color:#e0e0e0
