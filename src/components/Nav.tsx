@@ -8,13 +8,13 @@ export function Nav() {
       <div className="flex items-center gap-5">
         <a
           href="/#how-it-works"
-          className="text-sm text-text-muted hover:text-text transition-colors"
+          className="hidden sm:block text-sm text-text-muted hover:text-text transition-colors"
         >
           how it works
         </a>
         <a
           href="/privacy"
-          className="text-sm text-text-muted hover:text-text transition-colors"
+          className="hidden sm:block text-sm text-text-muted hover:text-text transition-colors"
         >
           privacy
         </a>
