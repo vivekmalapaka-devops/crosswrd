@@ -19,10 +19,16 @@ export interface CrosswordData {
   cols: number;
 }
 
+export interface EncryptedPayload {
+  v: 1;
+  ct: string;
+  iv: string;
+}
+
 export interface Puzzle {
   id: string;
   recipient_name: string;
-  clues: ClueAnswer[];
+  clues: ClueAnswer[] | EncryptedPayload;
   message: string;
   created_at: string;
 }

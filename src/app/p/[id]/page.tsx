@@ -31,11 +31,20 @@ export async function generateMetadata({
     return { title: "Puzzle not found — crosswrd.site" };
   }
 
+  const hasName = puzzle.recipient_name && puzzle.recipient_name.trim() !== "";
+  const title = hasName
+    ? `A crossword for ${puzzle.recipient_name} — crosswrd.site`
+    : "Someone made a crossword for you — crosswrd.site";
+  const ogTitle = hasName
+    ? `A crossword made for ${puzzle.recipient_name}`
+    : "Someone made a crossword just for you";
+
   return {
-    title: `A crossword for ${puzzle.recipient_name} — crosswrd.site`,
-    description: `Someone made a personal crossword puzzle for ${puzzle.recipient_name}. Open the link to solve it.`,
+    title,
+    description:
+      "Someone made a personal crossword puzzle just for you. Open the link to solve it.",
     openGraph: {
-      title: `A crossword made for ${puzzle.recipient_name}`,
+      title: ogTitle,
       description:
         "Someone made a personal crossword puzzle just for you. Can you solve it?",
     },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useEffect, useState } from "react";
-import { Puzzle } from "@/lib/types";
+import { Puzzle, ClueAnswer } from "@/lib/types";
 import { generateCrossword } from "@/lib/crossword";
 import { useCrosswordSolver } from "@/hooks/useCrosswordSolver";
 import { useTimer } from "@/hooks/useTimer";
@@ -9,17 +9,93 @@ import { CrosswordGrid } from "./CrosswordGrid";
 import { CluesPanel } from "./CluesPanel";
 import { ProgressBanner } from "./ProgressBanner";
 import { CompletionScreen } from "./CompletionScreen";
+import { isEncryptedPayload, decryptPuzzle } from "@/lib/crypto";
 
 interface SolvePageProps {
   puzzle: Puzzle;
 }
 
+interface DecryptedPuzzle {
+  recipient_name: string;
+  clues: ClueAnswer[];
+  message: string;
+}
+
 export function SolvePage({ puzzle }: SolvePageProps) {
-  const [showComplete, setShowComplete] = useState(false);
-  const data = useMemo(
-    () => generateCrossword(puzzle.clues),
-    [puzzle.clues]
+  const [decrypted, setDecrypted] = useState<DecryptedPuzzle | null>(null);
+  const [decryptError, setDecryptError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    async function init() {
+      if (isEncryptedPayload(puzzle.clues)) {
+        const hash = window.location.hash;
+        const match = hash.match(/k=([A-Za-z0-9_-]+)/);
+        if (!match) {
+          setDecryptError(
+            "Invalid link — the decryption key is missing. Make sure you copied the full URL including the part after the # symbol."
+          );
+          setReady(true);
+          return;
+        }
+        try {
+          const payload = await decryptPuzzle(puzzle.clues, match[1]);
+          setDecrypted(payload);
+        } catch {
+          setDecryptError(
+            "Invalid link — the decryption key may be incorrect or the data is corrupted."
+          );
+        }
+      } else {
+        // Legacy unencrypted puzzle
+        setDecrypted({
+          recipient_name: puzzle.recipient_name,
+          clues: puzzle.clues as ClueAnswer[],
+          message: puzzle.message,
+        });
+      }
+      setReady(true);
+    }
+    init();
+  }, [puzzle]);
+
+  if (!ready) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24">
+        <div className="text-3xl text-text-muted">Loading puzzle...</div>
+      </div>
+    );
+  }
+
+  if (decryptError) {
+    return (
+      <div className="max-w-[960px] mx-auto px-6 py-10 text-center">
+        <h2 className="font-hand text-3xl">Can&apos;t open this puzzle</h2>
+        <p className="text-text-muted text-base mt-2">{decryptError}</p>
+      </div>
+    );
+  }
+
+  if (!decrypted) return null;
+
+  return (
+    <SolvePageInner
+      recipientName={decrypted.recipient_name}
+      clues={decrypted.clues}
+      message={decrypted.message}
+    />
   );
+}
+
+interface SolvePageInnerProps {
+  recipientName: string;
+  clues: ClueAnswer[];
+  message: string;
+}
+
+function SolvePageInner({ recipientName, clues, message }: SolvePageInnerProps) {
+  const [showComplete, setShowComplete] = useState(false);
+  const data = useMemo(() => generateCrossword(clues), [clues]);
   const timer = useTimer();
 
   const solver = useCrosswordSolver(
@@ -56,11 +132,11 @@ export function SolvePage({ puzzle }: SolvePageProps) {
   if (showComplete) {
     return (
       <CompletionScreen
-        name={puzzle.recipient_name}
+        name={recipientName}
         wordCount={data.placed.length}
         time={timer.formatted}
         elapsed={timer.elapsed}
-        message={puzzle.message}
+        message={message}
       />
     );
   }
@@ -72,7 +148,7 @@ export function SolvePage({ puzzle }: SolvePageProps) {
           A crossword made for
         </div>
         <h2 className="font-hand text-[clamp(32px,8vw,64px)] tracking-tight">
-          {puzzle.recipient_name}
+          {recipientName}
         </h2>
       </div>
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ClueAnswer } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import { generateId } from "@/lib/id";
+import { generateEncryptionKey, encryptPuzzle } from "@/lib/crypto";
 import { Button } from "../ui/Button";
 
 interface ShareStepProps {
@@ -17,19 +18,29 @@ export function ShareStep({ name, clues, message }: ShareStepProps) {
   const [saving, setSaving] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const didSave = useRef(false);
 
   useEffect(() => {
+    if (didSave.current) return;
+    didSave.current = true;
+
     async function save() {
       const id = generateId();
       const validClues = clues.filter(
         (c) => c.clue.trim() && c.answer.trim().length >= 2
       );
 
+      const { key, keyString } = await generateEncryptionKey();
+      const encrypted = await encryptPuzzle(
+        { recipient_name: name, clues: validClues, message: message.trim() },
+        key
+      );
+
       const { error: err } = await supabase.from("puzzles").insert({
         id,
-        recipient_name: name,
-        clues: validClues,
-        message: message.trim(),
+        recipient_name: "",
+        clues: encrypted,
+        message: "",
       });
 
       if (err) {
@@ -38,7 +49,7 @@ export function ShareStep({ name, clues, message }: ShareStepProps) {
         return;
       }
 
-      const url = `${window.location.origin}/p/${id}`;
+      const url = `${window.location.origin}/p/${id}#k=${keyString}`;
       setLink(url);
       setSaving(false);
     }
